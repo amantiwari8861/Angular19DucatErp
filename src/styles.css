@@ -1,1 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+
+@layer base
+{
+    .navlink-active{
+        @apply text-blue-500! 
+    }
+    .navlink-inactive{
+        @apply text-gray-900 dark:text-white hover:text-blue-500
+    }
+}

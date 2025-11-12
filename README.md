@@ -1,59 +1,121 @@
-# Angular19Proj
+# What is Angular? (SPA vs MPA)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.9.
+Angular Architecture (Components, Modules, Services, Templates)
 
-## Development server
+Node.js + npm + Angular CLI setup
 
-To start a local development server, run:
+Project Structure (src/app, assets, environments)
 
-```bash
-ng serve
-```
+Angular 20 Standalone Components
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Component Decorator (@Component)
 
-## Code scaffolding
+Data Binding
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Interpolation {{}}
 
-```bash
-ng generate component component-name
-```
+Property Binding [property]
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Event Binding (event)
 
-```bash
-ng generate --help
-```
+Two-Way Binding [(ngModel)]
 
-## Building
+Directives
 
-To build the project run:
+Structural (*ngIf, *ngFor, *ngSwitch)
 
-```bash
-ng build
-```
+Attribute ([ngClass], [ngStyle])
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Custom Directives
 
-## Running unit tests
+Pipes
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+Built-in Pipes (date, uppercase, currency, etc.)
 
-```bash
-ng test
-```
+Parameterized & Custom Pipes
 
-## Running end-to-end tests
+Lifecycle Hooks (ngOnInit, ngOnChanges, etc.)
 
-For end-to-end (e2e) testing, run:
 
-```bash
-ng e2e
-```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+<input (keyup)="onType($event)">
+onType(event: any) {
+  console.log(event.target.value);
+}
 
-## Additional Resources
+<input [(ngModel)]="username" placeholder="Enter name">
+<p>Hello {{ username }}!</p>
+export class DemoComponent {
+  username = 'Aman';
+}
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+import { FormsModule } from '@angular/forms';
+
+@Component({
+  standalone: true,
+  imports: [FormsModule],
+  ...
+})
+
+
+<p *ngIf="isLoggedIn">Welcome back!</p>
+<p *ngIf="!isLoggedIn">Please log in</p>
+isLoggedIn = true;
+
+<ul>
+  <li *ngFor="let user of users; index as i">
+    {{ i + 1 }}. {{ user.name }}
+  </li>
+</ul>
+users = [{ name: 'Aman' }, { name: 'Riya' }, { name: 'John' }];
+
+
+<div [ngSwitch]="role">
+  <p *ngSwitchCase="'admin'">Welcome Admin</p>
+  <p *ngSwitchCase="'user'">Welcome User</p>
+  <p *ngSwitchDefault>Guest Access</p>
+</div>
+role = 'admin';
+
+
+<p [ngClass]="{ 'active': isActive, 'disabled': !isActive }">
+  Status: {{ isActive ? 'Active' : 'Inactive' }}
+</p>
+isActive = true;
+
+
+
+
+import { Directive, ElementRef, HostListener, Renderer2 } from '@angular/core';
+
+@Directive({
+  selector: '[appHighlight]'
+})
+export class HighlightDirective {
+  constructor(private el: ElementRef, private renderer: Renderer2) {}
+
+  @HostListener('mouseenter') onMouseEnter() {
+    this.renderer.setStyle(this.el.nativeElement, 'background', 'yellow');
+  }
+
+  @HostListener('mouseleave') onMouseLeave() {
+    this.renderer.removeStyle(this.el.nativeElement, 'background');
+  }
+}
+Using it in HTML:
+<p appHighlight>Hover over this text!</p>
+
+
+
+| Type                     | Syntax                         | Direction           | Example                          |
+| ------------------------ | ------------------------------ | ------------------- | -------------------------------- |
+| **Interpolation**        | `{{property}}`                 | One-way (TS → HTML) | `<p>{{ name }}</p>`              |
+| **Property Binding**     | `[property]="value"`           | One-way (TS → HTML) | `<img [src]="url">`              |
+| **Event Binding**        | `(event)="handler()"`          | One-way (HTML → TS) | `<button (click)="save()">`      |
+| **Two-Way Binding**      | `[(ngModel)]="prop"`           | Two-way             | `<input [(ngModel)]="username">` |
+| **Structural Directive** | `*ngIf`, `*ngFor`, `*ngSwitch` | Template control    | `<li *ngFor="let x of list">`    |
+| **Attribute Directive**  | `[ngClass]`, `[ngStyle]`       | Element appearance  | `<p [ngStyle]="...">`            |
+| **Custom Directive**     | `@Directive()`                 | Behavior extension  | `<div appHighlight>`             |
+
+
+
