@@ -1,2 +1,7 @@
 <p>landingpage works!</p>
-jhbfvj gf jfgjf
+
+<h1>Ur Name is {{name}}</h1>
+
+<!-- Enter ur name : <input type="text" [(ngModel)]="name" class="border-2 border-t-black"> -->
+Enter ur name : <input type="text" (keyup)="validateInp($event)" class="border-2 border-t-black"
+    [ngStyle]="{'color':'red','border':'2px solid blue'}">

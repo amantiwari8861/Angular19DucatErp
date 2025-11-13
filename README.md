@@ -44,6 +44,8 @@ onType(event: any) {
 }
 
 <input [(ngModel)]="username" placeholder="Enter name">
+
+
 <p>Hello {{ username }}!</p>
 export class DemoComponent {
   username = 'Aman';
