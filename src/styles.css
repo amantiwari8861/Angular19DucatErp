@@ -1,12 +1,41 @@
-/* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
 
-@layer base
-{
-    .navlink-active{
-        @apply text-blue-500! 
+/* global element styles go here */
+@layer base {
+    .navlink-active {
+        @apply text-blue-500!;
     }
-    .navlink-inactive{
-        @apply text-gray-900 dark:text-white hover:text-blue-500
+
+    .navlink-inactive {
+        @apply text-gray-900 dark:text-white hover:text-blue-500;
     }
+
+    .btn {
+        @apply rounded cursor-pointer px-4 py-2;
+    }
+
+    .btn-primary {
+        @apply bg-blue-500 hover:bg-blue-400;
+    }
+
+    .btn-success {
+        @apply bg-green-500 hover:bg-green-400;
+    }
+}
+
+/* ADD THIS — THIS FIXES EVERYTHING */
+@layer utilities {
+    .bg-brand {}
+    .bg-brand-softer {}
+    .bg-brand-strong {}
+
+    .bg-neutral-primary-soft {}
+    .text-fg-brand-strong {}
+
+    .border-default {}
+    .border-brand-subtle {}
+
+    .rounded-base {}
+    .shadow-xs {}
+    .text-heading {}
 }
