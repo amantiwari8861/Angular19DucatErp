@@ -3,10 +3,11 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from "@angular/common";
 import { Product } from '../../services/product';
 import { ProductModel } from '../../../model/Product';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-landingpage',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,RouterLink],
   templateUrl: './landingpage.html',
   styleUrl: './landingpage.css',
 })

@@ -1,0 +1,171 @@
+<div class="flex justify-center">
+  <div class="p-5 text-white bg-gray-900 w-[90%] max-w-6xl my-12 rounded-lg">
+
+    <!-- Top Controls -->
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
+      <!-- Entries per page -->
+      <div class="flex items-center gap-3">
+        <select [(ngModel)]="entriesPerPage" (change)="onEntriesPerPageChange()"
+                class="bg-gray-800 p-2 rounded">
+          <option [value]="10">10</option>
+          <option [value]="25">25</option>
+          <option [value]="50">50</option>
+        </select>
+        <span class="ml-2 text-gray-300">entries per page</span>
+      </div>
+
+      <!-- Search -->
+      <div class="w-full md:w-1/3">
+        <input [(ngModel)]="searchTerm" (input)="onSearch()" placeholder="Search..."
+               class="w-full bg-gray-800 p-2 rounded outline-none text-gray-200" />
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="overflow-x-auto rounded">
+      <table class="min-w-full bg-gray-800 rounded">
+        <thead>
+          <tr class="text-left border-b border-gray-700">
+
+            <!-- NOTE: pass template refs to startResize -->
+            <th #nameHeader class="p-3 cursor-pointer select-none relative"
+                (click)="sortBy('name', $event)">
+              <div class="flex items-center gap-2">
+                <span>Name</span>
+                <span class="text-blue-400 text-sm">{{ getSortIcon('name') }}</span>
+              </div>
+              <!-- resize handle -->
+              <span class="absolute right-0 top-0 h-full w-2 -mr-1 cursor-col-resize opacity-0 hover:opacity-100"
+                    (mousedown)="startResize($event, 'name', nameHeader)"></span>
+            </th>
+
+            <th #posHeader class="p-3 cursor-pointer select-none relative"
+                (click)="sortBy('position', $event)">
+              <div class="flex items-center gap-2">
+                <span>Position</span>
+                <span class="text-blue-400 text-sm">{{ getSortIcon('position') }}</span>
+              </div>
+              <span class="absolute right-0 top-0 h-full w-2 -mr-1 cursor-col-resize opacity-0 hover:opacity-100"
+                    (mousedown)="startResize($event, 'position', posHeader)"></span>
+            </th>
+
+            <th #officeHeader class="p-3 cursor-pointer select-none relative"
+                (click)="sortBy('office', $event)">
+              <div class="flex items-center gap-2">
+                <span>Office</span>
+                <span class="text-blue-400 text-sm">{{ getSortIcon('office') }}</span>
+              </div>
+              <span class="absolute right-0 top-0 h-full w-2 -mr-1 cursor-col-resize opacity-0 hover:opacity-100"
+                    (mousedown)="startResize($event, 'office', officeHeader)"></span>
+            </th>
+
+            <th #ageHeader class="p-3 cursor-pointer select-none relative"
+                (click)="sortBy('age', $event)">
+              <div class="flex items-center gap-2">
+                <span>Age</span>
+                <span class="text-blue-400 text-sm">{{ getSortIcon('age') }}</span>
+              </div>
+              <span class="absolute right-0 top-0 h-full w-2 -mr-1 cursor-col-resize opacity-0 hover:opacity-100"
+                    (mousedown)="startResize($event, 'age', ageHeader)"></span>
+            </th>
+
+            <th #startHeader class="p-3 cursor-pointer select-none relative"
+                (click)="sortBy('startDate', $event)">
+              <div class="flex items-center gap-2">
+                <span>Start date</span>
+                <span class="text-blue-400 text-sm">{{ getSortIcon('startDate') }}</span>
+              </div>
+              <span class="absolute right-0 top-0 h-full w-2 -mr-1 cursor-col-resize opacity-0 hover:opacity-100"
+                    (mousedown)="startResize($event, 'startDate', startHeader)"></span>
+            </th>
+
+            <th #salaryHeader class="p-3 cursor-pointer select-none relative"
+                (click)="sortBy('salary', $event)">
+              <div class="flex items-center gap-2">
+                <span>Salary</span>
+                <span class="text-blue-400 text-sm">{{ getSortIcon('salary') }}</span>
+              </div>
+              <span class="absolute right-0 top-0 h-full w-2 -mr-1 cursor-col-resize opacity-0 hover:opacity-100"
+                    (mousedown)="startResize($event, 'salary', salaryHeader)"></span>
+            </th>
+
+            <th class="p-3">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let emp of paginatedData" class="border-b border-gray-700 hover:bg-gray-700">
+            <td class="p-3">{{ emp.name }}</td>
+            <td class="p-3">{{ emp.position }}</td>
+            <td class="p-3">{{ emp.office }}</td>
+            <td class="p-3">{{ emp.age }}</td>
+            <td class="p-3">{{ emp.startDate }}</td>
+            <td class="p-3">{{ emp.salary }}</td>
+            <td class="p-3 space-x-2">
+              <button (click)="editEmployee(emp)" class="px-3 py-1 bg-blue-600 rounded">Edit</button>
+              <button (click)="deleteEmployee(emp)" class="px-3 py-1 bg-red-600 rounded">Delete</button>
+            </td>
+          </tr>
+
+          <!-- Empty state -->
+          <tr *ngIf="paginatedData.length === 0">
+            <td class="p-4 text-gray-400" colspan="7">No records found.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex flex-col sm:flex-row justify-between items-center mt-4 gap-3">
+      <div class="flex items-center gap-3">
+        <button (click)="changePage(currentPage - 1)" class="px-3 py-1 bg-gray-700 rounded"
+                [disabled]="currentPage === 1">Prev</button>
+        <span class="text-gray-300">Page {{ currentPage }} of {{ totalPages }}</span>
+        <button (click)="changePage(currentPage + 1)" class="px-3 py-1 bg-gray-700 rounded"
+                [disabled]="currentPage === totalPages">Next</button>
+      </div>
+
+      <div class="text-gray-400 text-sm">
+        Showing {{ (currentPage-1)*entriesPerPage + 1 }} -
+        {{ Math.min(currentPage*entriesPerPage, filteredData.length) }}
+        of {{ filteredData.length }}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- EDIT MODAL -->
+  <div *ngIf="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center">
+    <!-- backdrop -->
+    <div class="absolute inset-0 bg-black transition-opacity" [class.opacity-60]="modalAnimation" [class.opacity-0]="!modalAnimation"></div>
+
+    <!-- modal panel -->
+    <div class="relative z-10 w-11/12 max-w-md p-6 rounded-lg"
+         [class.transform]="true"
+         [class.transition-all]="true"
+         [class.duration-200]="true"
+         [class.scale-100]="modalAnimation"
+         [class.scale-95]="!modalAnimation"
+         [class.opacity-100]="modalAnimation"
+         [class.opacity-0]="!modalAnimation">
+      <div class="bg-gray-800 p-4 rounded-lg shadow-xl">
+        <h2 class="text-xl mb-3 text-white font-semibold">Edit Employee</h2>
+
+        <div class="space-y-3">
+          <input type="text" [(ngModel)]="tempEmployee!.name" class="w-full p-2 bg-gray-700 rounded" placeholder="Name" />
+          <input type="text" [(ngModel)]="tempEmployee!.position" class="w-full p-2 bg-gray-700 rounded" placeholder="Position" />
+          <input type="text" [(ngModel)]="tempEmployee!.office" class="w-full p-2 bg-gray-700 rounded" placeholder="Office" />
+          <input type="number" [(ngModel)]="tempEmployee!.age" class="w-full p-2 bg-gray-700 rounded" placeholder="Age" />
+          <input type="date" [(ngModel)]="tempEmployee!.startDate" class="w-full p-2 bg-gray-700 rounded" />
+          <input type="text" [(ngModel)]="tempEmployee!.salary" class="w-full p-2 bg-gray-700 rounded" placeholder="Salary" />
+        </div>
+
+        <div class="flex justify-end gap-3 mt-4">
+          <button (click)="closeModal()" class="px-4 py-2 bg-gray-600 rounded">Cancel</button>
+          <button (click)="saveEmployee()" class="px-4 py-2 bg-blue-600 rounded">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -20,9 +20,11 @@
         class="bg-white rounded-xl shadow-md border border-gray-200 p-5 transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg">
 
         <!-- IMAGE -->
-        <div class="w-full h-56 overflow-hidden rounded-lg object-center">
-            <img src="{{ prod.image }}" alt="{{ prod.title }}" class="w-full object-contain" height="150px" />
-        </div>
+        <a [routerLink]="['/product', prod.id]">
+            <div class="w-full h-56 overflow-hidden rounded-lg object-center">
+                <img src="{{ prod.image }}" alt="{{ prod.title }}" class="w-full object-contain" height="150px" />
+            </div>
+        </a>
 
         <!-- TITLE -->
         <h3 class="mt-4 text-lg font-semibold text-gray-900 line-clamp-2">

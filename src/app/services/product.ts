@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment.development';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { catchError, Observable, tap, throwError } from 'rxjs';
+import { catchError, Observable, retry, tap, throwError, timeout } from 'rxjs';
 import { ProductModel } from '../../model/Product';
 
 @Injectable({
@@ -22,6 +22,15 @@ export class Product {
 
     return this.http.get<ProductModel[]>(this.PRODUCTS_API_URL).pipe(
       tap((data: any) => console.log('Data Fetched:' + JSON.stringify(data))),
+      catchError(this.handleError)
+    );
+  }
+
+  getProductById(id: any): Observable<ProductModel> {
+    return this.http.get<ProductModel>(`${this.PRODUCTS_API_URL}/${id}`).pipe(
+      tap((data: any) => console.log('Data Fetched:' + JSON.stringify(data))),
+      timeout(5000),    // ⏳ fail if no response in 5 seconds
+      retry(3),         // 🔁 retry API 3 times on failure
       catchError(this.handleError)
     );
   }
@@ -73,3 +82,5 @@ export class Product {
   }
 
 }
+
+
