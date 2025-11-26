@@ -5,4 +5,5 @@ interface Employee {
     age: number;
     startDate: string; // ISO date string yyyy-mm-dd
     salary: string;
+    address?: string;
 }

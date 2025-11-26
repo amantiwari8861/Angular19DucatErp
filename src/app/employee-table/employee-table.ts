@@ -1,75 +1,79 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, TitleCasePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
+type EmployeeKey = keyof Employee;
 
 @Component({
   selector: 'app-employee-table',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TitleCasePipe],
   templateUrl: './employee-table.html'
 })
 export class EmployeeTable implements OnInit, OnDestroy {
-  Math = Math; // <-- Fix
-  document=document;
-  // --- Modal state & edit buffers ---
+  Math: Math = Math
+  columns: { key: EmployeeKey; label: string }[] = [
+    { key: "name", label: "Name" },
+    { key: "position", label: "Position" },
+    { key: "office", label: "Office" },
+    { key: "age", label: "Age" },
+    { key: "startDate", label: "Start Date" },
+    { key: "salary", label: "Salary" },
+    { key: "address", label: "Address" }
+  ];
+
   showEditModal = false;
-  modalAnimation = false; // controls scale/fade class
+  modalAnimation = false;
   editingEmployee: Employee | null = null;
   tempEmployee: Employee | null = null;
 
-  // --- Sorting (multi-column) ---
-  sortState: { column: keyof Employee; direction: 'asc' | 'desc' }[] = [];
+  sortState: { column: EmployeeKey; direction: 'asc' | 'desc' }[] = [];
 
-  // --- Table data ---
   employees: Employee[] = [
-    { name: "Prescott Bartlett", position: "Technical Author", office: "London", age: 27, startDate: "2011-05-07", salary: "$145,000" },
-    { name: "Gavin Cortez", position: "Team Leader", office: "San Francisco", age: 22, startDate: "2008-10-26", salary: "$235,500" },
-    { name: "Lael Greer", position: "Systems Administrator", office: "London", age: 21, startDate: "2009-02-27", salary: "$103,500" },
-    { name: "Gloria Little", position: "Systems Administrator", office: "New York", age: 59, startDate: "2009-04-10", salary: "$237,500" },
-    { name: "Tiger Nixon", position: "System Architect", office: "Edinburgh", age: 61, startDate: "2011-04-25", salary: "$320,800" },
-    { name: "Tiger Nixon", position: "System Architect", office: "Edinburgh", age: 61, startDate: "2011-04-25", salary: "$320,800" },
-    { name: "Prescott Bartlett", position: "Technical Author", office: "London", age: 27, startDate: "2011-05-07", salary: "$145,000" },
-    { name: "Gavin Cortez", position: "Team Leader", office: "San Francisco", age: 22, startDate: "2008-10-26", salary: "$235,500" },
-    { name: "Lael Greer", position: "Systems Administrator", office: "London", age: 21, startDate: "2009-02-27", salary: "$103,500" },
-    { name: "Gloria Little", position: "Systems Administrator", office: "New York", age: 59, startDate: "2009-04-10", salary: "$237,500" },
-    { name: "Tiger Nixon", position: "System Architect", office: "Edinburgh", age: 61, startDate: "2011-04-25", salary: "$320,800" },
-    { name: "Gavin Cortez", position: "Team Leader", office: "San Francisco", age: 22, startDate: "2008-10-26", salary: "$235,500" },
-    { name: "Lael Greer", position: "Systems Administrator", office: "London", age: 21, startDate: "2009-02-27", salary: "$103,500" },
-    { name: "Gloria Little", position: "Systems Administrator", office: "New York", age: 59, startDate: "2009-04-10", salary: "$237,500" },
-    { name: "Tiger Nixon", position: "System Architect", office: "Edinburgh", age: 61, startDate: "2011-04-25", salary: "$320,800" },
-    { name: "Prescott Bartlett", position: "Technical Author", office: "London", age: 27, startDate: "2011-05-07", salary: "$145,000" },
-    { name: "Gavin Cortez", position: "Team Leader", office: "San Francisco", age: 22, startDate: "2008-10-26", salary: "$235,500" },
-    { name: "Lael Greer", position: "Systems Administrator", office: "London", age: 21, startDate: "2009-02-27", salary: "$103,500" },
-    { name: "Gloria Little", position: "Systems Administrator", office: "New York", age: 59, startDate: "2009-04-10", salary: "$237,500" },
-    { name: "Tiger Nixon", position: "System Architect", office: "Edinburgh", age: 61, startDate: "2011-04-25", salary: "$320,800" },
-    { name: "Prescott Bartlett", position: "Technical Author", office: "London", age: 27, startDate: "2011-05-07", salary: "$145,000" },
-    { name: "Gavin Cortez", position: "Team Leader", office: "San Francisco", age: 22, startDate: "2008-10-26", salary: "$235,500" },
-    { name: "Lael Greer", position: "Systems Administrator", office: "London", age: 21, startDate: "2009-02-27", salary: "$103,500" },
-    { name: "Gloria Little", position: "Systems Administrator", office: "New York", age: 59, startDate: "2009-04-10", salary: "$237,500" },
-    { name: "Tiger Nixon", position: "System Architect", office: "Edinburgh", age: 61, startDate: "2011-04-25", salary: "$320,800" },
-    { name: "Prescott Bartlett", position: "Technical Author", office: "London", age: 27, startDate: "2011-05-07", salary: "$145,000" },
-    { name: "Gavin Cortez", position: "Team Leader", office: "San Francisco", age: 22, startDate: "2008-10-26", salary: "$235,500" },
-    { name: "Lael Greer", position: "Systems Administrator", office: "London", age: 21, startDate: "2009-02-27", salary: "$103,500" },
-    { name: "Gloria Little", position: "Systems Administrator", office: "New York", age: 59, startDate: "2009-04-10", salary: "$237,500" },
-    { name: "Tiger Nixon", position: "System Architect", office: "Edinburgh", age: 61, startDate: "2011-04-25", salary: "$320,800" },
-    // ...add more realistic rows if needed (avoid huge duplicates)
-  ];
+    { name: "Aman Tiwari", position: "Software Engineer", office: "Noida", age: 26, startDate: "2021-07-10", salary: "$120,000", address: "Sector 62, Noida" },
+    { name: "Riya Sharma", position: "UI/UX Designer", office: "Gurgaon", age: 24, startDate: "2022-01-18", salary: "$95,000", address: "DLF Phase 3" },
+    { name: "Mohit Verma", position: "Backend Developer", office: "Bangalore", age: 28, startDate: "2020-11-02", salary: "$135,000", address: "Electronic City" },
+    { name: "Anita Desai", position: "HR Manager", office: "Mumbai", age: 34, startDate: "2019-03-27", salary: "$150,000", address: "Andheri West" },
+    { name: "Arjun Mehta", position: "Team Lead", office: "Pune", age: 31, startDate: "2018-09-15", salary: "$180,000", address: "Viman Nagar" },
+    { name: "Neha Agarwal", position: "QA Engineer", office: "Noida", age: 29, startDate: "2022-05-07", salary: "$110,000", address: "Sector 63" },
+    { name: "Rohit Singh", position: "Scrum Master", office: "Remote", age: 33, startDate: "2020-06-14", salary: "$160,000" },
+    { name: "Sneha Kapoor", position: "Data Analyst", office: "Delhi", age: 27, startDate: "2021-12-19", salary: "$128,000" },
+    { name: "Harshit Jain", position: "Frontend Dev", office: "Hyderabad", age: 25, startDate: "2023-02-09", salary: "$105,000" },
+    { name: "Aisha Khan", position: "ML Engineer", office: "Bangalore", age: 30, startDate: "2022-04-22", salary: "$170,000" },
+    { name: "Varun Sethi", position: "DevOps Engineer", office: "Chennai", age: 32, startDate: "2019-07-30", salary: "$165,000" },
+    { name: "Karan Patel", position: "Network Engineer", office: "Mumbai", age: 36, startDate: "2017-01-12", salary: "$150,000", address: "Juhu" },
+    { name: "Sakshi Malhotra", position: "Digital Marketer", office: "Delhi", age: 28, startDate: "2021-08-05", salary: "$98,000", address: "Rohini" },
+    { name: "Nishant Kumar", position: "Database Engineer", office: "Pune", age: 29, startDate: "2020-05-18", salary: "$140,000" },
+    { name: "Tanya Singh", position: "Business Analyst", office: "Noida", age: 26, startDate: "2023-01-22", salary: "$125,000" },
+    { name: "Vikram Rana", position: "Full Stack Dev", office: "Gurgaon", age: 27, startDate: "2022-10-09", salary: "$145,000" },
+    { name: "Saurabh Mishra", position: "Cloud Architect", office: "Bangalore", age: 38, startDate: "2016-03-01", salary: "$220,000" },
+    { name: "Deepika Rao", position: "Project Manager", office: "Hyderabad", age: 35, startDate: "2018-12-15", salary: "$190,000" },
+    { name: "Yash Gupta", position: "Tech Support", office: "Delhi", age: 24, startDate: "2023-04-11", salary: "$80,000" },
+    { name: "Simran Kaur", position: "Content Writer", office: "Remote", age: 25, startDate: "2022-11-07", salary: "$75,000" },
+    { name: "Prateek Bansal", position: "Android Developer", office: "Bangalore", age: 27, startDate: "2020-06-23", salary: "$130,000" },
+    { name: "Megha Rathi", position: "iOS Developer", office: "Chennai", age: 29, startDate: "2021-03-13", salary: "$132,000" },
+    { name: "Siddharth Sharma", position: "Security Engineer", office: "Pune", age: 33, startDate: "2019-10-02", salary: "$175,000" },
+    { name: "Rajeev Chauhan", position: "Tech Lead", office: "Noida", age: 37, startDate: "2017-05-04", salary: "$210,000" },
+    { name: "Shreya Pandit", position: "Product Owner", office: "Gurgaon", age: 32, startDate: "2020-01-20", salary: "$200,000" },
+    { name: "Aditya Raj", position: "Research Engineer", office: "Hyderabad", age: 28, startDate: "2021-06-01", salary: "$150,000" },
+    { name: "Priya Verma", position: "HR Executive", office: "Mumbai", age: 30, startDate: "2022-12-05", salary: "$95,000" },
+    { name: "Akhil Arya", position: "Sales Manager", office: "Delhi", age: 40, startDate: "2015-08-18", salary: "$250,000" },
+    { name: "Aparna Joshi", position: "Support Engineer", office: "Chennai", age: 26, startDate: "2023-02-01", salary: "$85,000" }
+  ]
+    ;
 
-  // --- Table UI state ---
   filteredData: Employee[] = [];
   paginatedData: Employee[] = [];
-  searchTerm: string = '';
-  entriesPerPage: number = 10;
-  currentPage: number = 1;
 
-  // --- Column resize state ---
+  searchTerm = '';
+  entriesPerPage = 10;
+  currentPage = 1;
+
+  // COLUMN RESIZE
   private isResizing = false;
   private resizeColumnEl: HTMLElement | null = null;
   private startX = 0;
   private startWidth = 0;
-
-  // event handler references so we can remove listeners
   private boundDoResize = this.doResize.bind(this);
   private boundStopResize = this.stopResize.bind(this);
 
@@ -79,46 +83,28 @@ export class EmployeeTable implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // cleanup any global listeners (in case still attached)
-    this.document.removeEventListener('mousemove', this.boundDoResize);
-    this.document.removeEventListener('mouseup', this.boundStopResize);
+    document.removeEventListener('mousemove', this.boundDoResize);
+    document.removeEventListener('mouseup', this.boundStopResize);
   }
 
-  // -----------------------
-  // Search & Pagination
-  // -----------------------
   onSearch() {
-    const q = this.searchTerm.trim().toLowerCase();
-    if (!q) {
-      this.filteredData = [...this.employees];
-    } else {
-      this.filteredData = this.employees.filter(emp =>
-        Object.values(emp).some(val =>
-          val?.toString().toLowerCase().includes(q)
-        )
-      );
-    }
+    const term = this.searchTerm.toLowerCase();
+    this.filteredData = this.employees.filter(emp =>
+      Object.values(emp).some(v => (v ?? "").toString().toLowerCase().includes(term))
+    );
     this.currentPage = 1;
-    // preserve sort after search
-    if (this.sortState.length) {
-      this.applySort();
-    }
+    if (this.sortState.length) this.applySort();
     this.updatePage();
   }
 
   get totalPages() {
-    return Math.max(1, Math.ceil(this.filteredData.length / this.entriesPerPage));
+    return Math.ceil(this.filteredData.length / this.entriesPerPage);
   }
 
   updatePage() {
-    this.entriesPerPage=Number(this.entriesPerPage);
-    const start = (this.currentPage - 1) * this.entriesPerPage; // 2-1*10
-    console.log(typeof start,typeof this.entriesPerPage);
-    
-    const end:number = start + this.entriesPerPage;
-    console.log(start,end);
-    console.log(this.filteredData);
-    console.log(this.filteredData.slice(start,end));
+    this.entriesPerPage = Number(this.entriesPerPage); // force to number
+    const start = (this.currentPage - 1) * this.entriesPerPage;
+    const end = start + this.entriesPerPage;
     this.paginatedData = this.filteredData.slice(start, end);
   }
 
@@ -128,43 +114,23 @@ export class EmployeeTable implements OnInit, OnDestroy {
     this.updatePage();
   }
 
-  // when user changes entriesPerPage
-  onEntriesPerPageChange() {
-    console.log(this.entriesPerPage);
-    this.currentPage = 1;
-    this.updatePage();
+  getSortIcon(column: EmployeeKey) {
+    const s = this.sortState.find(s => s.column === column);
+    return s ? (s.direction === 'asc' ? '▲' : '▼') : '';
   }
 
-  // -----------------------
-  // Sorting: multi-column
-  // -----------------------
-  // helper for template to show ▲ / ▼
-  getSortIcon(column: keyof Employee) {
-    const sort = this.sortState.find(s => s.column === column);
-    if (!sort) return '';
-    return sort.direction === 'asc' ? '▲' : '▼';
-  }
-
-  sortBy(column: keyof Employee, event?: MouseEvent) {
-    const multi = !!event?.shiftKey;
-    const existingIndex = this.sortState.findIndex(s => s.column === column);
+  sortBy(column: EmployeeKey, event?: MouseEvent) {
+    const multi = event?.shiftKey;
+    const index = this.sortState.findIndex(s => s.column === column);
 
     if (!multi) {
-      // single-column: if clicked same column, toggle; otherwise replace
-      if (existingIndex >= 0) {
-        this.sortState[existingIndex].direction =
-          this.sortState[existingIndex].direction === 'asc' ? 'desc' : 'asc';
-      } else {
-        this.sortState = [{ column, direction: 'asc' }];
-      }
+      if (index >= 0) this.sortState[index].direction =
+        this.sortState[index].direction === 'asc' ? 'desc' : 'asc';
+      else this.sortState = [{ column, direction: 'asc' }];
     } else {
-      // multi-column (shift+click)
-      if (existingIndex >= 0) {
-        this.sortState[existingIndex].direction =
-          this.sortState[existingIndex].direction === 'asc' ? 'desc' : 'asc';
-      } else {
-        this.sortState.push({ column, direction: 'asc' });
-      }
+      if (index >= 0) this.sortState[index].direction =
+        this.sortState[index].direction === 'asc' ? 'desc' : 'asc';
+      else this.sortState.push({ column, direction: 'asc' });
     }
 
     this.applySort();
@@ -172,86 +138,75 @@ export class EmployeeTable implements OnInit, OnDestroy {
   }
 
   private applySort() {
-    // stable multi-column comparator
     this.filteredData.sort((a, b) => {
       for (const s of this.sortState) {
-        const x = a[s.column];
-        const y = b[s.column];
+        const x = a[s.column] ?? null;
+        const y = b[s.column] ?? null;
 
-        // normalize strings to lower-case for consistent ordering
-        const nx = typeof x === 'string' ? x.toLowerCase() : x;
-        const ny = typeof y === 'string' ? y.toLowerCase() : y;
+        const nx = typeof x === "string" ? x.toLowerCase() : x;
+        const ny = typeof y === "string" ? y.toLowerCase() : y;
 
-        if (nx < ny) return s.direction === 'asc' ? -1 : 1;
-        if (nx > ny) return s.direction === 'asc' ? 1 : -1;
-        // otherwise equal -> continue to next sort key
+        if (nx === null && ny === null) continue;
+        if (nx === null) return s.direction === "asc" ? -1 : 1;
+        if (ny === null) return s.direction === "asc" ? 1 : -1;
+
+        if (nx < ny) return s.direction === "asc" ? -1 : 1;
+        if (nx > ny) return s.direction === "asc" ? 1 : -1;
       }
       return 0;
     });
   }
 
-  // -----------------------
-  // Edit modal (open/close/save)
-  // -----------------------
   editEmployee(emp: Employee) {
     this.editingEmployee = emp;
-    this.tempEmployee = { ...emp }; // copy for editing
-    // open modal with animation
+    this.tempEmployee = { ...emp };
     this.showEditModal = true;
-    // small delay so CSS transition runs
     setTimeout(() => this.modalAnimation = true, 10);
   }
 
   saveEmployee() {
     if (this.editingEmployee && this.tempEmployee) {
       Object.assign(this.editingEmployee, this.tempEmployee);
-      // refresh filtered/paginated views to show updated values
-      this.onSearch(); // will reapply sort & update page
+      this.onSearch();
     }
     this.closeModal();
   }
 
   closeModal() {
-    // play closing animation first
     this.modalAnimation = false;
     setTimeout(() => {
       this.showEditModal = false;
-      this.editingEmployee = null;
       this.tempEmployee = null;
-    }, 180); // match CSS duration
+      this.editingEmployee = null;
+    }, 200);
   }
 
-  // -----------------------
-  // Delete
-  // -----------------------
   deleteEmployee(emp: Employee) {
-    if (!confirm(`Delete ${emp.name}?`)) return;
-    this.employees = this.employees.filter(e => e !== emp);
-    // refresh filtered and paginated lists
-    this.onSearch();
+    if (confirm(`Delete ${emp.name}?`)) {
+      this.employees = this.employees.filter(e => e !== emp);
+      this.onSearch();
+    }
   }
 
-  // -----------------------
-  // Column resize (no libraries)
-  // -----------------------
-  // Called from template: startResize($event, 'name', nameHeader)
-  startResize(event: MouseEvent, _columnKey: string, thEl: HTMLElement) {
-    event.preventDefault();
+  // COLUMN RESIZE
+  startResize(event: MouseEvent, th: HTMLElement) {
+    const target = event.target as HTMLElement | null;
+    if (!target) return;
+
     this.isResizing = true;
-    this.resizeColumnEl = thEl;
+    this.resizeColumnEl = th;  // Use reference from template
     this.startX = event.pageX;
-    this.startWidth = thEl.offsetWidth;
+    this.startWidth = th.offsetWidth;
 
     document.addEventListener('mousemove', this.boundDoResize);
     document.addEventListener('mouseup', this.boundStopResize);
   }
 
-  private doResize(evt: MouseEvent) {
+
+  private doResize(e: MouseEvent) {
     if (!this.isResizing || !this.resizeColumnEl) return;
-    const delta = evt.pageX - this.startX;
-    const newWidth = Math.max(60, this.startWidth + delta); // minimum width = 60px
-    // set inline width style; table will adapt
-    this.resizeColumnEl.style.width = `${newWidth}px`;
+    const newW = Math.max(60, this.startWidth + (e.pageX - this.startX));
+    this.resizeColumnEl.style.width = `${newW}px`;
   }
 
   private stopResize() {
@@ -259,5 +214,12 @@ export class EmployeeTable implements OnInit, OnDestroy {
     this.resizeColumnEl = null;
     document.removeEventListener('mousemove', this.boundDoResize);
     document.removeEventListener('mouseup', this.boundStopResize);
+  }
+  get pageNumbers(): number[] {
+    const pages: number[] = [];
+    for (let i = 1; i <= this.totalPages; i++) {
+      pages.push(i);
+    }
+    return pages;
   }
 }
